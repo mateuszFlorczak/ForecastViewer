@@ -7,6 +7,9 @@
 //
 
 #import "AppDelegate.h"
+#import "City.h"
+#import "CitiesForecastCollectionViewController.h"
+#import "StaticHeadersCollectionViewLayout.h"
 
 @interface AppDelegate ()
 
@@ -16,7 +19,18 @@
 
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-    // Override point for customization after application launch.
+    RLMRealm *realm = [RLMRealm defaultRealm];
+    [self clearRealmData:realm];
+    [self setupCityData:realm];
+
+    StaticHeadersCollectionViewLayout *collectionViewLayout = [[StaticHeadersCollectionViewLayout alloc] init];
+    UICollectionViewController *citiesForecastCollectionViewController = [[CitiesForecastCollectionViewController alloc] initWithCollectionViewLayout:collectionViewLayout];
+    
+    self.window = [[UIWindow alloc] initWithFrame:[[UIScreen mainScreen] bounds]];
+    self.window.rootViewController = citiesForecastCollectionViewController;
+    self.window.backgroundColor = [UIColor whiteColor];
+    
+    [self.window makeKeyAndVisible];
     return YES;
 }
 
@@ -47,5 +61,24 @@
     // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:.
 }
 
+#pragma mark - Private methods
+
+- (void)clearRealmData:(RLMRealm *)realm {
+    [realm beginWriteTransaction];
+    [realm deleteAllObjects];
+    [realm commitWriteTransaction];
+}
+
+- (void)setupCityData:(RLMRealm *)realm {
+    [realm beginWriteTransaction];
+    [realm addObjects:@[[[City alloc] initWithValue:@[@7531002, @"Gdańsk", @[]]],
+                        [[City alloc] initWithValue:@[@524901, @"Moscow", @[]]],
+                        [[City alloc] initWithValue:@[@1835848, @"Seoul", @[]]],
+                        [[City alloc] initWithValue:@[@1850147, @"Tokyo", @[]]],
+                        [[City alloc] initWithValue:@[@756135, @"Warsaw", @[]]],
+                        [[City alloc] initWithValue:@[@4880731, @"Washington", @[]]]
+                        ]];
+    [realm commitWriteTransaction];
+}
 
 @end
